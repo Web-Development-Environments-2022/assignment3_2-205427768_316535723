@@ -53,6 +53,24 @@ router.get('/favorites', async (req,res,next) => {
   }
 });
 
+/**
+ * This path returns the last watched recipes that were viewed by the logged-in user
+ */
+ router.get('/lastWatchedRecipes', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    let last_watched_recipes = {};
+    const recipes_id = await user_utils.getLastWatchedRecipes(user_id);
+    let recipes_id_array = [];
+    recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
+    const results = await recipe_utils.getRecipesPreview(recipes_id_array);
+    res.status(200).send(results);
+  } catch(error){
+    next(error); 
+  }
+});
+
+
 
 /**
  * This path returns the favorites recipes that were saved by the logged-in user
