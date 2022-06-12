@@ -2,8 +2,6 @@ const axios = require("axios");
 //const { exports } = require("mssql/lib/base");
 const api_domain = "https://api.spoonacular.com/recipes";
 
-
-
 // ### Search ###
 
 /**
@@ -54,56 +52,28 @@ async function getRandomRecipes() {
     let recipe_info = await get3RandomRecipes();
     console.log("get3RandomRecipes end");
     console.log();
-    console.log(await recipe_info["recipes"]);
-    //console.log(await recipe_info[1]['id']);
-    // for(i = 0 ; i < 3; i++)
-    // {
-    //    let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree } = recipe_info.data;
-    // }
-    // //let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree } = recipe_info.data;
 
-    // return {
-    //     id: id,
-    //     title: title,
-    //     readyInMinutes: readyInMinutes,
-    //     image: image,
-    //     popularity: aggregateLikes,
-    //     vegan: vegan,
-    //     vegetarian: vegetarian,
-    //     glutenFree: glutenFree,  
-    // }
-}
-
-/**
- * Get random recipes list of length 10 from spooncular
- * @param {*} 
- */
- async function getRandomRecipes(){
-    const response = await axios.get(`${api_domain}/random`,{
-        params:{
-            Number: 10,
-            apiKey: process.env.spooncular_apiKey
-        }
-    });
-    return response;
-}
-
-async function getRandomThreeRecipes(){
-    let random_pool = await getRandomRecipes();
-    console.log("length of pool");
-    let filtered_random_pool = random_pool.data.recipes.filter((random) =>(random.instructions != "") && (random.image && random.instructions)) //??
-    if(filtered_random_pool.lenth < 3){
-        return getRandomThreeRecipes();
+    console.log(await recipe_info.data['recipes'][0]['id']);
+    random_ids_array = []
+    for(i = 0 ; i < 3; i++)
+    {
+        random_ids_array.push(recipe_info.data['recipes'][i]['id']);
     }
-    console.log(filtered_random_pool[0])
-    return extractPreviewRecipeDetails([filtered_random_pool[0], filtered_random_pool[1], filtered_random_pool[2]]);
+    console.log(await random_ids_array);
+    return getRecipesPreview(random_ids_array);
 }
 
 async function get3RandomRecipes(){
     console.log("random3");
+    console.log(await axios.get(`${api_domain}/random`, {
+        params: {
+            number: 3,
+            apiKey: process.env.spooncular_apiKey
+        }
+    }));
    return await axios.get(`${api_domain}/random`, {
        params: {
-           number: 2,
+           number: 3,
            apiKey: process.env.spooncular_apiKey
        }
    });
@@ -136,7 +106,6 @@ async function getRecipeDetails(recipe_id) {
         servings: servings,
     }
 }
-
 
 // ## Information: list of id ###
 async function getRecipesPreview(recipe_ids_list){
@@ -197,7 +166,7 @@ async function getRecipeDetailsBulk(recipe_ids) {
 }
 
 exports.getRecipesPreview = getRecipesPreview;
-exports.getRandomThreeRecipes = getRandomThreeRecipes;
+exports.get3RandomRecipes = get3RandomRecipes;
 exports.searchRecipes = searchRecipes;
 exports.getRecipeDetails = getRecipeDetails;
 exports.getRandomRecipes = getRandomRecipes;
