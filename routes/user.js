@@ -12,6 +12,7 @@ router.use(async function (req, res, next) {
     DButils.execQuery("SELECT user_id FROM users").then((users) => {
       if (users.find((x) => x.user_id === req.session.user_id)) {
         req.user_id = req.session.user_id;
+        console.log("user: "+ req.user_id +" just login");
         next();
       }
     }).catch(err => next(err));
@@ -52,6 +53,29 @@ router.get('/favorites', async (req,res,next) => {
   }
 });
 
+
+/**
+ * This path returns the favorites recipes that were saved by the logged-in user
+ */
+ router.get('/views', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    console.log("looking for user *" + user_id +"* last views");
+    const views_recipes_id = await user_utils.getLastViewsRecipes(user_id);
+    let views_recipes_id_array = [];
+    for(i=0; i< views_recipes_id.length; i++)
+    {
+      console.log("i = " + i +":" + await views_recipes_id[i]['recipeID']);
+      views_recipes_id_array.push(views_recipes_id[i]['recipeID']);
+    }
+    console.log("views_recipes_id_array" + views_recipes_id_array);
+    //views_recipes_id.map((element) => views_recipes_id_array.push(element['recipeID'])); //extracting the recipe ids into array
+    const results = await recipe_utils.getRecipesPreview(views_recipes_id_array);
+    res.status(200).send(results);
+  } catch(error){
+    next(error); 
+  }
+});
 
 
 

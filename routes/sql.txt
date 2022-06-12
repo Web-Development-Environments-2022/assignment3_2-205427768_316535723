@@ -1,0 +1,17 @@
+SELECT * FROM mydb.users;
+create table users(
+	user_id int NOT NULL AUTO_INCREMENT, 
+    username varchar(45) UNIQUE,
+    firstname varchar(45),
+    lastname varchar(45),
+    country varchar(45),
+    password varchar(255),
+    email varchar(255),
+    PRIMARY KEY (user_id)
+)
+
+create table views(
+	userID varchar(255),
+    recipeID varchar(255),
+    ViewingDate datetime
+)
