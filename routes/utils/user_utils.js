@@ -9,10 +9,17 @@ async function getFavoriteRecipes(user_id){
     return recipes_id;
 }
 
+async function getLastViewsRecipes(user_id){
+    //const recipes_id = await DButils.execQuery(`select recipeID from views where userID='${user_id}' order by `);
+    const recipes_id = await DButils.execQuery(`SELECT DISTINCT recipeID FROM views where userID='${user_id}' order by ViewingDate asc LIMIT 3 `);
+    return await recipes_id;
+}
+
 async function markAsViewed(user_id, recipe_id){
     await DButils.execQuery(`insert into recipesviews values ('${user_id}','${recipe_id}', now())`);
 }
 
+<<<<<<< HEAD
 async function getLastWatchedRecipes(user_id){
     const recipes_id = await DButils.execQuery(`select recipe_id from recipesviews where user_id='${user_id}' AND recipe_id = (select recipe_id from recipesviews as alt WHERE alt.recipe_id = recipesviews.recipe_id ORDER BY date DESC LIMIT 1) ORDER BY date DESC LIMIT 3`);
     return recipes_id;
@@ -24,3 +31,9 @@ exports.markAsFavorite = markAsFavorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
 exports.markAsViewed = markAsViewed;
 exports.getLastWatchedRecipes = getLastWatchedRecipes;
+=======
+exports.markAsFavorite = markAsFavorite;
+exports.getFavoriteRecipes = getFavoriteRecipes;
+exports.markAsViewed = markAsViewed;
+exports.getLastViewsRecipes = getLastViewsRecipes;
+>>>>>>> 5f8ea0038c3d7829c16be5d54da5d419b6d394b1
