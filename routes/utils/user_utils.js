@@ -9,7 +9,12 @@ async function getFavoriteRecipes(user_id){
     return recipes_id;
 }
 
+async function markAsViewed(user_id, recipe_id){
+    await DButils.execQuery(`insert into recipesviews values ('${user_id}','${recipe_id}', now())`);
+}
+
 
 
 exports.markAsFavorite = markAsFavorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
+exports.markAsViewed = markAsViewed;

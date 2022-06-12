@@ -35,8 +35,7 @@ async function getRecipesPreview(recipe_ids_list){
  * @param {*} dish_Name 
  */
 async function searchRecipeInformation(dish_Name,cuisine,diet, intolerance){
-    console.log(dish_Name);
-    console.log(cuisine);
+
     const response = await axios.get(`${api_domain}/complexSearch`,{
         params:{
             number: 15,

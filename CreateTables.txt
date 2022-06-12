@@ -1,0 +1,6 @@
+CREATE TABLE `mydb`.`recipesviews` (
+  `user_id` INT NOT NULL,
+  `redipe_id` INT NOT NULL,
+  `date` DATETIME NOT NULL,
+  PRIMARY KEY (`user_id`, `redipe_id`, `date`));
+
