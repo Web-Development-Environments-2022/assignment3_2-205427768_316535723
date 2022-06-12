@@ -25,22 +25,31 @@ async function getRecipesPreview(recipe_ids_list){
         promises.push(getRecipeInformation(id));
     });
     let info_res = await Promise.all(promises);
+
+    info_res.map((recp)=>{console.log(recp.data)}); // ??? 
+
     return extractPreviewRecipeDetails(info_res);
 }
 /**
  * Get recipes list of lenth 15 from spooncular response (serach)
  * @param {*} dish_Name 
  */
-async function searchRecipeInformation(dish_Name){
-    console.log(dish_Name)
+async function searchRecipeInformation(dish_Name,cuisine,diet, intolerance){
+    console.log(dish_Name);
+    console.log(cuisine);
     const response = await axios.get(`${api_domain}/complexSearch`,{
         params:{
             number: 15,
             query: dish_Name,
-            apiKey: process.env.spooncular_apiKey
+            apiKey: process.env.spooncular_apiKey,
+            addRecipeInformation: true,
+            instructionsRequired: true,
+            cuisine: cuisine,
+            diet: diet,
+            intolerance: intolerance,
         }
     });
-    console.log(response)
+    //console.log(response)
     return response;
 }
 
@@ -61,23 +70,10 @@ async function getRandomRecipes(){
 }
 
 function extractPreviewRecipeDetails(recipe_info){
-  /*  console.log(recipe_info)
-    let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree } = recipe_info.data;
-
-    return {
-        id: id,
-        title: title,
-        readyInMinutes: readyInMinutes,
-        image: image,
-        popularity: aggregateLikes,
-        vegan: vegan,
-        vegetarian: vegetarian,
-        glutenFree: glutenFree,
-        
-    }*/
     return recipe_info.map((recipe_info) =>{
         let data = recipe_info;
-        if(recipe_info.data!= null){
+        //if(recipe_info.data!= null){
+        if(recipe_info.data){
             data = recipe_info.data;
         }
         const {
@@ -139,10 +135,23 @@ async function getRecipeDetails(recipe_id) {
     }
 }
 
-async function searchRecipes(dish_Name){
-    let recipe_info = await searchRecipeInformation(dish_Name);
-    console.log(recipe_info.lenth);
+async function searchRecipes(dish_Name, cuisine, diet, intolerance){
+    let recipe_info = await searchRecipeInformation(dish_Name,cuisine, diet, intolerance);
+    return  recipe_info.data.results.map((search_res) => {
+        let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, analyzedInstructions} = search_res;
+        return {
+            id: id,
+            title: title,
+            readyInMinutes: readyInMinutes,
+            image: image,
+            popularity: aggregateLikes,
+            vegan: vegan,
+            vegetarian: vegetarian,
+            glutenFree: glutenFree,
+            instructions: analyzedInstructions,
+        };
 
+    });
 
 
 
@@ -185,12 +194,14 @@ async function searchRecipes(dish_Name){
         servings: servings,
     }*/
 
+   // console.log(recipe_info.data.results);
+   // let recipe_id_list = recipe_info.data.results.map(({id}) => id)
 
-    let {id, title} = recipe_info.data.results[0];
-    return {
-        id: id,
-        title: title,
-    }
+  //  let {id, title} = recipe_info.data.results[0];
+   // return {
+   //     id: id,
+     //   title: title,
+   // }
 }
 
 async function getRandomThreeRecipes(){
