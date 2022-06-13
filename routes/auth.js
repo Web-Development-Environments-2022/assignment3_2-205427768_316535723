@@ -9,7 +9,11 @@ router.post("/Register", async (req, res, next) => {
     // parameters exists
     // valid parameters
     // username exists
+<<<<<<< HEAD
    // res.status(207).send({ message: "beggin", success: true });
+=======
+    //res.status(207).send({ message: "beggin", success: true });
+>>>>>>> 9f1b9d57fbfe54a4350cc5effcceda778fdbf72f
     let user_details = {
       username: req.body.username,
       firstname: req.body.firstname,

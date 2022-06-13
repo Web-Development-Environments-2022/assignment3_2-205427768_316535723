@@ -21,12 +21,16 @@ async function markAsViewed(user_id, recipe_id){
     await DButils.execQuery(`insert into recipesviews values ('${user_id}','${recipe_id}', now())`);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9f1b9d57fbfe54a4350cc5effcceda778fdbf72f
 async function getLastWatchedRecipes(user_id){
     const recipes_id = await DButils.execQuery(`select DISTINCT recipe_id from recipesviews where user_id='${user_id}' AND recipe_id = (select recipe_id from recipesviews as alt WHERE alt.recipe_id = recipesviews.recipe_id ORDER BY date DESC LIMIT 1) ORDER BY date DESC LIMIT 3`);
     return recipes_id;
 }
 
+<<<<<<< HEAD
 async function isViewed (recipe_id, user_id){
     const  views= await DButils.execQuery(`SELECT recipe_id from recipesviews where user_id='${user_id}' AND recipe_id='${recipe_id}'`);
     let is_viewed = false;
@@ -49,10 +53,21 @@ async function isFavorite (recipe_id, user_id){
 }
 
 
+=======
+async function getMyRecipes(user_id){
+    const myRecipes = await DButils.execQuery(`select * from myrecipes where userID='${user_id}' LIMIT 10`);
+    return myRecipes;
+}
+>>>>>>> 9f1b9d57fbfe54a4350cc5effcceda778fdbf72f
 
 exports.markAsFavorite = markAsFavorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
 exports.markAsViewed = markAsViewed;
 exports.getLastWatchedRecipes = getLastWatchedRecipes;
+<<<<<<< HEAD
 exports.isViewed = isViewed;
 exports.isFavorite = isFavorite;
+=======
+exports.getLastViewsRecipes = getLastViewsRecipes;
+exports.getMyRecipes = getMyRecipes;
+>>>>>>> 9f1b9d57fbfe54a4350cc5effcceda778fdbf72f

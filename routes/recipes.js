@@ -5,20 +5,6 @@ const user_utils = require("./utils/user_utils");
 
 router.get("/", (req, res) => res.send("im here"));
 
-/**
- * This path returns 3 random preview recipes
- */
-router.get("/random", async (req, res, next) =>{
-  try{
-    let random_3_recipes = await recipes_utils.getRandomThreeRecipes();
-    console.log(random_3_recipes);
-    res.send(random_3_recipes);
-  }
-  catch(error){
-    next(error);
-  }
-});
-
 // ### Search ###
   router.get("/complexSearch", async (req, res, next) => {
     try {
@@ -61,21 +47,6 @@ router.get("/random", async (req, res, next) =>{
   }
 });
 
-// /**
-//  * This path returns 3 random preview recipes
-//  */
-//  router.get("/random", async (req, res, next) =>{
-//   try{
-//     let random_3_recipes = await recipes_utils.getRandomThreeRecipes();
-//     console.log(random_3_recipes);
-//     res.send(random_3_recipes);
-//   }
-//   catch(error){
-//     next(error);
-//   }
-// });
-
-
 
 // ## Information: single id ###
 /**
@@ -114,10 +85,6 @@ router.get("/recipe", async (req, res, next) => {
 //     next(error);
 //   }
 // });
-
-
-
-
 
 module.exports = router;
 
