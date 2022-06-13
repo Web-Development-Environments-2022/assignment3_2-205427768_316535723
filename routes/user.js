@@ -70,8 +70,6 @@ router.get('/favorites', async (req,res,next) => {
   }
 });
 
-
-
 /**
  * This path returns the favorites recipes that were saved by the logged-in user
  */
@@ -95,6 +93,34 @@ router.get('/favorites', async (req,res,next) => {
   }
 });
 
+router.post("/MyRecipes", async (req, res, next) => {
+  try {
+    const user_id = req.session.user_id;
+    let user_details = {
+      userID: user_id,
+      title: req.body.title,
+      readyInMinutes: req.body.readyInMinutes,
+      image: req.body.image,
+      popularity: req.body.popularity,
+      vegan: req.body.vegan,
+      vegetarian: req.body.vegetarian,
+      glutenFree: req.body.glutenFree,
+      extendedIngredients: req.body.extendedIngredients,
+      instructions: req.body.instructions,
+      servings: req.body.servings
+    }
+    console.log(user_details);
+
+    console.log("add new recipe to DB");
+    await DButils.execQuery(
+      `INSERT INTO myrecipes(userID, title, readyInMinutes, image, popularity, vegan, vegetarian, glutenFree, extendedIngredients, instructions, servings) 
+      VALUES ('${user_details.userID}', '${user_details.title}', '${user_details.readyInMinutes}', '${user_details.image}','${user_details.popularity}','${user_details.vegan}','${user_details.vegetarian}', '${user_details.glutenFree} ', '${user_details.extendedIngredients}', '${user_details.instructions} ', '${user_details.servings}')`
+    );
+    res.status(201).send({ message: "new recipe added", success: true });
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 module.exports = router;
