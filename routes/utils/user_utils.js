@@ -24,8 +24,14 @@ async function getLastWatchedRecipes(user_id){
     return recipes_id;
 }
 
+async function getMyRecipes(user_id){
+    const myRecipes = await DButils.execQuery(`select * from myrecipes where userID='${user_id}' LIMIT 10`);
+    return myRecipes;
+}
+
 exports.markAsFavorite = markAsFavorite;
 exports.getFavoriteRecipes = getFavoriteRecipes;
 exports.markAsViewed = markAsViewed;
 exports.getLastWatchedRecipes = getLastWatchedRecipes;
 exports.getLastViewsRecipes = getLastViewsRecipes;
+exports.getMyRecipes = getMyRecipes;

@@ -123,4 +123,22 @@ router.post("/MyRecipes", async (req, res, next) => {
 });
 
 
+/**
+ * This path returns the favorites recipes that were saved by the logged-in user
+ */
+ router.get('/MyRecipes', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    console.log("looking for user *" + user_id +"* - private recipes!");
+    const myRecipes = await user_utils.getMyRecipes(user_id);
+    for(i=0; i< myRecipes.length; i++)
+    {
+      console.log("i = " + i +":" + await myRecipes[i]['id']);
+    }
+    res.status(200).send(myRecipes);
+  } catch(error){
+    next(error); 
+  }
+});
+
 module.exports = router;
