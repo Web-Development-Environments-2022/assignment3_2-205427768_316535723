@@ -33,8 +33,8 @@ create table MyRecipes(
     primary key(id)
 )
 
-INSERT INTO MyRecipes(title, readyInMinutes, image, popularity, vegan, vegetarian, glutenFree, extendedIngredients, instructions, servings) 
-VALUES("Omelette",5,"https://www.foodisgood.co.il/wp-content/uploads/2018/02/how-to-make-an-omelet.jpg", 9, FALSE , TRUE, TRUE,
+INSERT INTO MyRecipes(userID, title, readyInMinutes, image, popularity, vegan, vegetarian, glutenFree, extendedIngredients, instructions, servings) 
+VALUES(7, "Omelette",5,"https://www.foodisgood.co.il/wp-content/uploads/2018/02/how-to-make-an-omelet.jpg", "9", FALSE , TRUE, TRUE,
 "2 large eggs, 1 tablespoon unsalted butter,2 tablespoons grated cheese, any kind
 3 cherry tomatoes, cut in half and sprinkled lightly with salt
 2 tablespoons chopped basil, parsley, or herb of your choice", 
