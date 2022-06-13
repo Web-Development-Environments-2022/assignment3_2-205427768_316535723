@@ -2,5 +2,7 @@ CREATE TABLE `mydb`.`recipesviews` (
   `user_id` INT NOT NULL,
   `redipe_id` INT NOT NULL,
   `date` DATETIME NOT NULL,
-  PRIMARY KEY (`user_id`, `redipe_id`, `date`));
+  PRIMARY KEY (`user_id`, `recipe_id`, `date`));
 
+SELECT * FROM recipesviews LIMIT 100;
+SELECT DISTINCT recipe_id FROM recipesviews where user_id=1 order by date desc LIMIT 3;

@@ -15,3 +15,5 @@ create table views(
     recipeID varchar(255),
     ViewingDate datetime
 )
+
+SELECT EXISTS(SELECT * from recipesviews where user_id=1 AND recipe_id=10)
