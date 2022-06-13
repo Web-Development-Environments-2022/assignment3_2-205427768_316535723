@@ -1,10 +1,7 @@
 const axios = require("axios");
 //const { exports } = require("mssql/lib/base");
 const api_domain = "https://api.spoonacular.com/recipes";
-<<<<<<< HEAD
 const user_utils = require("./user_utils");
-=======
->>>>>>> 9f1b9d57fbfe54a4350cc5effcceda778fdbf72f
 
 // ### Search ###
 
@@ -63,7 +60,7 @@ async function searchRecipes(dish_Name, cuisine, diet, intolerance, user_id, rec
 }
 
 // ### Random ###
-async function getRandomRecipes() {
+async function getRandomRecipes(user_id) {
     console.log("get3RandomRecipes start");
     let recipe_info = await get3RandomRecipes();
     console.log("get3RandomRecipes end");
@@ -76,17 +73,10 @@ async function getRandomRecipes() {
         random_ids_array.push(recipe_info.data['recipes'][i]['id']);
     }
     console.log(await random_ids_array);
-    return getRecipesPreview(random_ids_array);
+    return getRecipesPreview(random_ids_array, user_id);
 }
 
 async function get3RandomRecipes(){
-    console.log("random3");
-    console.log(await axios.get(`${api_domain}/random`, {
-        params: {
-            number: 3,
-            apiKey: process.env.spooncular_apiKey
-        }
-    }));
    return await axios.get(`${api_domain}/random`, {
        params: {
            number: 3,

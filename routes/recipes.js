@@ -40,7 +40,8 @@ router.get("/", (req, res) => res.send("im here"));
  router.get("/random", async (req, res,next) => {
   console.log("START: random");
   try {
-    const recipe = await recipes_utils.getRandomRecipes();
+    const user_id = req.session.user_id;
+    const recipe = await recipes_utils.getRandomRecipes(user_id);
     res.send(recipe);
   } catch (error) {
     next(error);
