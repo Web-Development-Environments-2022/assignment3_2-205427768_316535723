@@ -30,33 +30,36 @@ const user_utils = require("./user_utils");
     return response;
 }
 
-async function searchRecipes(dish_Name, cuisine, diet, intolerance, user_id, recipe_id ){
+async function searchRecipes(dish_Name, cuisine, diet, intolerance, user_id){
     let recipe_info = await searchRecipeInformation(dish_Name,cuisine, diet, intolerance);
-    //check if user viewed the recipe+ if it is in his favorites
-    let is_viewed = false;
-    let is_favorite = false;
-    if(user_id != undefined){
-        is_viewed = await user_utils.isViewed(recipe_id, user_id);
-        is_favorite = await user_utils.isFavorite(recipe_id, user_id);
-    }
-    return  recipe_info.data.results.map((search_res) => {
-        let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, analyzedInstructions} = search_res;
-        return {
-            id: id,
-            title: title,
-            readyInMinutes: readyInMinutes,
-            image: image,
-            popularity: aggregateLikes,
-            vegan: vegan,
-            vegetarian: vegetarian,
-            glutenFree: glutenFree,
-            instructions: analyzedInstructions,
-            view: is_viewed,
-            favorite: is_favorite,
-        };
-
-    });
-
+   
+    return  Promise.all(
+        recipe_info.data.results.map(async(search_res) => {
+            let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, analyzedInstructions} = search_res;
+            //check if user viewed the recipe+ if it is in his favorites
+            let is_viewed = false;
+            let is_favorite = false;
+            if(user_id != undefined){
+                is_viewed = await user_utils.isViewed(id, user_id);
+                is_favorite = await user_utils.isFavorite(id, user_id);
+            }
+            return {
+                id: id,
+                title: title,
+                readyInMinutes: readyInMinutes,
+                image: image,
+                popularity: aggregateLikes,
+                vegan: vegan,
+                vegetarian: vegetarian,
+                glutenFree: glutenFree,
+                instructions: analyzedInstructions,
+                view: is_viewed,
+                favorite: is_favorite,
+            };
+    
+        })
+    
+    ) 
 }
 
 // ### Random ###
@@ -113,7 +116,7 @@ async function getRecipeDetails(recipe_id, user_id) {
         vegan: vegan,
         vegetarian: vegetarian,
         glutenFree: glutenFree,
-        extendedIngredients: extendedIngredients,
+        ingredients: extendedIngredients,
         instructions: instructions,
         servings: servings,
         view: is_viewed,
@@ -124,7 +127,7 @@ async function getRecipeDetails(recipe_id, user_id) {
 // ## Information: list of id ###
 async function getRecipesPreview(recipe_ids_list, user_id){
     let promises = [];
-    recipe_ids_list.map((id) =>{
+    recipe_ids_list.map(async(id) =>{
         promises.push(getRecipeInformation(id));
     });
     let info_res = await Promise.all(promises);

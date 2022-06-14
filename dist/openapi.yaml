@@ -17,214 +17,615 @@ tags:
 - name: Recipes
   description: All reciepes general info
 paths:
-  /register:
+  /Register:
     post:
       tags:
-      - Auth
-      summary: A new user from the client is added to the server
-      description: A JSON object contains all the details about the new user.
+        - Auth
+      summary: a new user from the client was added to the server.
+      operationId: register
+      description: a JSON object contatins all the details about the new user.
+      responses:
+        '201':
+          description: user created
+        #'400':
+          #description: wrong input parameters
+        '409':
+          description: username taken
       requestBody:
-        description: Inventory item to add
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-        required: true
-      responses:
-        "201":
-          description: A new user has been added
-        "400":
-          description: wrong input parameters
-  /login:
-    post:
-      tags:
-      - Auth
-      summary: Login an exist user
-      description: An exist user login to the system
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginScheme'
-        required: true
-      responses:
-        "200":
-          description: |
-            User was found in the DB and authenitcated successfully. The session ID is returned in a cookie named `session`.  You should include this cookie in subsequent requests
-          headers:
-            Set-Cookie:
-              style: simple
-              explode: false
-              schema:
-                type: string
-                example: session=87s97sdhgf279293f8w0e9
-        "401":
-          description: Authentication failed
-  /logout:
+        description: new User to add
+  /Login:
     post:
       tags:
         - Auth
-      summary: logout a user from the system and delete his cookie
+      summary: a new user has been logged in
+      operationId: login
+      description: a JSON object contatins all the details about the new user.
       responses:
-        "200":
-          description: "the user has ben successfully logged out"
-  /users/favorites:
-    get:
-      tags:
-      - Users
-      summary: Return the favorite recipes that were saved by user
-      description: Get an array of recipes that were saved by a specific user
-      responses:
-        "200":
-          description: data about the user's favorites recipes returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RecipePreview'
-        "401":
-          description: user is not authorized
-      security:
-      - cookieAuth: []
-    post:
-      tags:
-      - Users
-      summary: save recipe in the favorites list of a user
-      description: save recipe in the favorites list of a user
+        '201':
+          description: login succeeded
+        '401':
+          description: Username or Password incorrect
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                reciepeId:
-                  type: string
-                  description: reciepe's id which the user saved
-                  example: 716429
+              $ref: '#/components/schemas/userLogin'
+        description: login User
+  /Logout:
+    post:
+      tags:
+        - Auth
+      summary: logout
+      operationId: logout
+      description: logout
       responses:
-        "200":
-          description: The Recipe successfully saved as favorite
-        "401":
-          description: user is not authorized
-      security:
-      - cookieAuth: []
-  /recipes/{recipeId}:
+        '200':
+          description: logout succeeded
+        #'401':
+         # description: Username or Password incorrect
+  /recipes/random:
     get:
       tags:
-      - Recipes
-      summary: Return preview details on recipe by his ID
-      description: Return preview details on recipe by his ID
-      parameters:
-      - name: recipeId
-        in: path
-        description: recipe's id
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
+        - Recipes
+      summary: get random 3 recipes from the spoonacularAPI
+      operationId: randomRecipes
+      description: get random 3 recipes from the spoonacularAPI
       responses:
-        "200":
-          description: data about the recipe
+        '200':
+          description: data of a specific 3 recipes
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecipePreview'
-        "404":
-          description: recipeId is not exists
+                $ref: '#/components/schemas/randomArray'
+        #'404':
+         # description: recipe not found
+  /recipes/recipe:
+    get:
+      tags:
+        - Recipes
+      summary: get data of a specific recipe
+      operationId: showrecipe
+      description: get from the client a recipe and returns his data
+      parameters:
+        - in: query
+          name: recipeId
+          description: the ID of the recipe
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: data of a specific recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeDisplay'
+        '404':
+          description: recipe not found
+  /recipes/search:
+    get:
+      tags:
+        - Recipes
+      summary: get list of recipes
+      operationId: searchRecipes
+      description: get from the client a string of recipe and returns a list of recipes, the length of the list is 5/10/15. the default lenth is 5. there is an option to search by cuisine, diets, intolerances.
+      parameters:
+        - in: query
+          name: dishName
+          description: a recipe the client is searching for.
+          required: false
+          schema:
+            type: string
+            example: italian
+        - in: query
+          name: cuisine
+          description: cuisine.
+          required: false
+          schema:
+            type: string
+            example: italian
+        - in: query
+          name: intolerance
+          description: intolerance.
+          required: false
+          schema:
+            type: string
+            example: gluten
+        - in: query
+          name: diet
+          description: intolerance.
+          required: false
+          schema:
+            type: string
+            example: Gluten
+        
+      responses:
+        '200':
+          description: data of a specific recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeSearchArray'
+        '204':
+          description: No results
+  /users/favorites:
+    post:
+      tags:
+        - Users
+      summary: add a recipe to favorites of  logged in user
+      operationId: addToFavorites
+      description: a JSON object contatins the id of the recipe.
+      responses:
+        '200':
+          description: The Recipe successfully saved as favorite
+        '401':
+          description: Unauthorized
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addToFavorites'
+        description: login User
+    get:
+      tags:
+        - Users
+      summary: gets data of favorite recipes of the logged in user
+      operationId: getFavorites
+      description: get from the client a recipe and returns his data
+      #parameters:
+      responses:
+        '200':
+          description: data of a specific recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recipePreview'
+        '204':
+          description: No favorite recipes
+        '401':
+          description: Unauthorized
+  /users/FamilyRecipes:
+    get:
+      tags:
+        - Users
+      summary: gets data of family recipes of the logged in user
+      operationId: getFemilyRecipes
+      description: gets data of family recipes of the logged in user
+      responses:
+        '200':
+          description: list of specific recipes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyRecipes'
+        '404':
+          description: recipes not found
+  /users/lastWatchedRecipes:
+    get:
+      tags:
+        - Users
+      summary: get last three watched recipes the logged in user
+      operationId: lastWatchedRecipes
+      description: get last three watched recipes the logged in user
+      responses:
+        '200':
+          description: data last three watched recipes the logged in user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/last3WatchedArray'
+        '204':
+          description: No last watched recipes
+        '401':
+          description: Unauthorized
+  /users/MyRecipes:
+    post:
+      tags:
+        - Users
+      summary: add a recipe to  my recipes of the logged in user
+      operationId: addToMyRecipes
+      description: a JSON object contatins the details of the new recipe
+      responses:
+        '201':
+          description: new recipe added
+        '401':
+          description: Unauthorized
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addToMyRecipes'
+        description: login User
+    get:
+      tags:
+        - Users
+      summary: gets data of my recipes of the logged in user
+      operationId: getMyRecipes
+      description: gets data of my recipes of the logged in user
+      #parameters:
+      responses:
+        '200':
+          description: data of a specific recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/myRecipes'
+        '204':
+          description: No my recipes
+        '401':
+          description: Unauthorized
+  /recipes:
+    get:
+      tags:
+        - Recipes
+      summary: check if we can reach the route
+      operationId: recipes
+      description: check if we can reach the route
+      responses:
+        '200':
+          description: im here
+    
+
 components:
   schemas:
     User:
       type: object
+      required:
+        - username
+        - firstname
+        - lastname
+        - country
+        - password
+        - email
       properties:
         username:
-          maxLength: 8
-          minLength: 3
           type: string
-          description: username conatins between 3 to 8 letters only
-          example: my_name
+          minLength: 3
+          maxLength: 8
+          description: username contains between 3 to 8 letters and contains just letters
+          example: mayasos
         firstname:
           type: string
           description: user's first name
-          example: my_first_name
+          example: Maya
         lastname:
           type: string
           description: user's last name
-          example: my_last_name
+          example: Sosnovik
         country:
           type: string
           description: user's country
-          example: Israel
+          example: israel
         password:
-          maxLength: 10
+          type: string
           minLength: 5
-          type: string
-          description: password conatins between 5 to 10 chars, at least one of them
-            is a number and a special char
+          maxLength: 10
           format: password
-          example: my_name@12
+          description: password contains between 5 to 10 characters, at least one character is a number and at least one of the characters is a special char.
+          example: maya!1
         email:
-          pattern: email
           type: string
+          format: email
           description: user's email
-          example: my_name12@gmail.com
-        # image-url:
-        #   pattern: URL
-        #   type: string
-        #   description: URL for the user's image
-        #   example: https://cloudinary.com/
-      description: Model containing user info
-    LoginScheme:
+          example: maya@gmail.com
+    userLogin:
       type: object
+      required:
+        - username
+        - password
       properties:
         username:
-          maxLength: 8
-          minLength: 3
           type: string
-          description: username conatins letters only
+          minLength: 3
+          maxLength: 8
+          description: username contains between 3 to 8 letters and contains just letters.
+          example: mayasos
         password:
-          maxLength: 10
-          minLength: 5
-          description: password conatins at least one number and one special char
+          type: string
           format: password
-      example:
-        username: my_name
-        password: my_name@12
-    RecipePreview:
+          description: password contains between 5 to 10 characters, at least one character is a number and at least one of the characters is a special char.
+          example: maya!1
+    RecipeDisplay:
       type: object
       properties:
         id:
+          description: id of the recipe
           type: integer
-          description: recipe identifier
-          example: 102
+          example: 715538
         title:
+          description: the title of the recipe
           type: string
-          description: recipe name
-          example: Simple Macaroni and Cheese
-        image:
-          type: string
-          description: recipe image
-          format: URL
-          example: https://spoonacular.com/recipeimages/655455-566x370.jpg
+          example: What to make for dinner tonight?? Bruschetta Style Pork & Pasta
         readyInMinutes:
+          description: the time it takes to make the recipe
           type: integer
-          description: the time takes to make this recipe
-          example: 45
+          example: 35
+        image:
+          description: link to the image of the recipe
+          type: string
+          example: https://spoonacular.com/recipeImages/715538-556x370.jpg
         popularity:
+          description: the number of likes the recipe got
           type: integer
-          description: how many likes got this recipe
-          example: 5987
-        vegetarian:
-          type: boolean
-          description: indication if the recipe is vegetarian
-          example: false
+          example: 163
         vegan:
+          description: is the recipe vegan
           type: boolean
-          description: indication if the recipe is vegan
+          example: false
+        vegetarian:
+          description: is the recipe vegeterian
+          type: boolean
           example: false
         glutenFree:
+          description: is the recipe glutenFree
           type: boolean
-          description: indication if the recipe is gluten free
           example: false
-  
+        ingredients:
+          type: array
+          description: list of components and their quantity
+          items:
+            $ref: '#/components/schemas/componentsDetails'
+        instructions:
+          type: string
+          description: the instruction for making the recipe.
+          example: wash and rinse pork chops and place into the skillet.cut them into bite sized pieces and add half of the Basil Garlic simmer sauce.boil your water and start working on cooking your bow-tie pasta.when you have finished with boiling and draining your pasta, add it to the pork along with the rest of the Basil Garlic Simmering Sauce, mixing lightly.Next you will top with the Chunky Bruschetta Finishing Sauce, cover with Parmesan, and cover. Cooking on low heat 2 to 3 minutes or until heated through.
+        servings:
+          type: integer
+          description: the number of portions you can with the recipe.
+          example: 5
+        view:
+          description: is the recipe viewed before
+          type: boolean
+          example: false
+        favorite:
+          description: is the recipe is a favorite recipe of the user
+          type: boolean
+          example: false
+    RecipeSearchArray:
+      type: array
+      description: list of recipes
+      items:
+        $ref: '#/components/schemas/RecipeSearchDetails'
+      minItems: 0
+      maxItems: 15
+    RecipeSearchDetails:
+      type: object
+      properties:
+        id:
+          description: id of the recipe
+          type: integer
+          example: 654959
+        title:
+          description: the title of the recipe
+          type: string
+          example: Pasta With Tuna
+        readyInMinutes:
+          description: the time it takes to make the recipe
+          type: integer
+          example: 45
+        image:
+          description: link to the image of the recipe
+          type: string
+          example: https://spoonacular.com/recipeImages/654959-312x231.jpg
+        popularity:
+          description: the number of likes the recipe got
+          type: integer
+          example: 2
+        vegan:
+          description: is the recipe vegan
+          type: boolean
+          example: false
+        vegetarian:
+          description: is the recipe vegeterian
+          type: boolean
+          example: false
+        glutenFree:
+          description: is the recipe glutenFree
+          type: boolean
+          example: false
+        instructions:
+          type: array
+          description: list of components and their quantity
+          items:
+            $ref: '#/components/schemas/instructionsDetails'
+        view:
+          description: is the recipe viewed before
+          type: boolean
+          example: false
+        favorite:
+          description: is the recipe is a favorite recipe of the user
+          type: boolean
+          example: false
+    recipePreview:
+      type: object
+      properties:
+        id:
+          description: id of the recipe
+          type: integer
+          example: 654959
+        title:
+          description: the title of the recipe
+          type: string
+          example: Pasta With Tuna
+        readyInMinutes:
+          description: the time it takes to make the recipe
+          type: integer
+          example: 45
+        image:
+          description: link to the image of the recipe
+          type: string
+          example: https://spoonacular.com/recipeImages/654959-312x231.jpg
+        popularity:
+          description: the number of likes the recipe got
+          type: integer
+          example: 2
+        vegan:
+          description: is the recipe vegan
+          type: boolean
+          example: false
+        vegetarian:
+          description: is the recipe vegeterian
+          type: boolean
+          example: false
+        glutenFree:
+          description: is the recipe glutenFree
+          type: boolean
+          example: false
+        view:
+          description: is the recipe viewed before
+          type: boolean
+          example: false
+        favorite:
+          description: is the recipe is a favorite recipe of the user
+          type: boolean
+          example: false
+    componentsDetails:
+      type: object
+      properties:
+        name:
+          type: string
+          description: the name of the component
+          example: sugar
+        amount:
+          type: number
+          description: the amount of the component
+          example: 3
+        unit:
+          type: string
+          description: the amount of the component
+          example: cups
+    instructionsDetails:
+      type: object
+      properties:
+        number:
+          type: integer
+          description: the step number
+          example: 1
+        step:
+          type: number
+          description: the current step in the instructions
+          example: Cook pasta in a large pot of boiling water until al dente.
+
+    addToFavorites:
+      type: object
+      required:
+        - recipeId
+      properties:
+        recipeId:
+          type: integer
+          description: recipeID of the recipe the logged in user wants to add to his favorites.
+          example: 715530
+    FamilyRecipes:
+      type: array
+      description: list of recipes
+      items:
+        $ref: '#/components/schemas/FamilyRecipe'
+    FamilyRecipe:
+      type: object
+      properties:
+        recipe_id:
+          description: id of the recipe
+          type: integer
+          example: 1
+        title:
+          description: the title of the recipe
+          type: string
+          example: coffee
+        family_member:
+          description: the family memeber that makes the recipe
+          type: string
+          example: dad
+        when_to_make:
+          description: when to make the recipe
+          type: string
+          example: sunday
+        ingredients:
+          description: the ingredients of the recipe
+          type: string
+          example: cofee
+        instructions:
+          description: the instructions of the recipe
+          type: string
+          example: cofee
+    randomArray:
+      type: array
+      description: list of recipes
+      items:
+        $ref: '#/components/schemas/recipePreview'
+      minItems: 3
+      maxItems: 3
+    last3WatchedArray:
+      type: array
+      description: list of recipes
+      items:
+        $ref: '#/components/schemas/recipePreview'
+      minItems: 0
+      maxItems: 3
+    addToMyRecipes:
+      type: object
+      properties:
+        title:
+          description: the title of the recipe
+          type: string
+          example: What to make for dinner tonight?? Bruschetta Style Pork & Pasta
+        readyInMinutes:
+          description: the time it takes to make the recipe
+          type: integer
+          example: 35
+        image:
+          description: link to the image of the recipe
+          type: string
+          example: https://spoonacular.com/recipeImages/715538-556x370.jpg
+        popularity:
+          description: the number of likes the recipe got
+          type: integer
+          example: 0
+        vegan:
+          description: is the recipe vegan
+          type: boolean
+          example: false
+        vegetarian:
+          description: is the recipe vegeterian
+          type: boolean
+          example: false
+        glutenFree:
+          description: is the recipe glutenFree
+          type: boolean
+          example: false
+        ingredients:
+          description: list of components and their quantity
+          type: string
+          example: 1 spoon of cofee, 30 ml milk,200 ml water
+         # type: array
+          #description: list of components and their quantity
+          #items:
+           # $ref: '#/components/schemas/componentsDetails'
+        instructions:
+          type: string
+          description: the instruction for making the recipe.
+          example: wash and rinse pork chops and place into the skillet.cut them into bite sized pieces and add half of the Basil Garlic simmer sauce.boil your water and start working on cooking your bow-tie pasta.when you have finished with boiling and draining your pasta, add it to the pork along with the rest of the Basil Garlic Simmering Sauce, mixing lightly.Next you will top with the Chunky Bruschetta Finishing Sauce, cover with Parmesan, and cover. Cooking on low heat 2 to 3 minutes or until heated through.
+        servings:
+          type: integer
+          description: the number of portions you can with the recipe.
+          example: 5
+        #view:
+         # description: is the recipe viewed before
+          #type: boolean
+          #example: false
+        #favorite:
+         # description: is the recipe is a favorite recipe of the user
+          #type: boolean
+          #example: false
+    myRecipes:
+      type: array
+      description: list of recipes
+      items:
+        $ref: '#/components/schemas/addToMyRecipes'

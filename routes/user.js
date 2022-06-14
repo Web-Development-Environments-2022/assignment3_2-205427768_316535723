@@ -46,6 +46,9 @@ router.get('/favorites', async (req,res,next) => {
     const recipes_id = await user_utils.getFavoriteRecipes(user_id);
     let recipes_id_array = [];
     recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
+    if (recipes_id_array.length==0) {
+      throw { status: 204, message: "No favorite recipes"};
+    }
     const results = await recipe_utils.getRecipesPreview(recipes_id_array, user_id);
     res.status(200).send(results);
   } catch(error){
@@ -62,8 +65,12 @@ router.get('/favorites', async (req,res,next) => {
     let last_watched_recipes = {};
     const recipes_id = await user_utils.getLastWatchedRecipes(user_id);
     let recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
+    recipes_id.map(async(element) => recipes_id_array.push(element.recipeID)); //extracting the recipe ids into array
+    if (recipes_id_array.length==0) {
+      throw { status: 204, message: "No last watched recipes"};
+    }
     const results = await recipe_utils.getRecipesPreview(recipes_id_array, user_id);
+    
     res.status(200).send(results);
   } catch(error){
     next(error); 
@@ -105,7 +112,7 @@ router.post("/MyRecipes", async (req, res, next) => {
       vegan: req.body.vegan,
       vegetarian: req.body.vegetarian,
       glutenFree: req.body.glutenFree,
-      extendedIngredients: req.body.extendedIngredients,
+      ingredients: req.body.ingredients,
       instructions: req.body.instructions,
       servings: req.body.servings
     }
@@ -114,7 +121,7 @@ router.post("/MyRecipes", async (req, res, next) => {
     console.log("add new recipe to DB");
     await DButils.execQuery(
       `INSERT INTO myrecipes(userID, title, readyInMinutes, image, popularity, vegan, vegetarian, glutenFree, extendedIngredients, instructions, servings) 
-      VALUES ('${user_details.userID}', '${user_details.title}', '${user_details.readyInMinutes}', '${user_details.image}','${user_details.popularity}','${user_details.vegan}','${user_details.vegetarian}', '${user_details.glutenFree} ', '${user_details.extendedIngredients}', '${user_details.instructions} ', '${user_details.servings}')`
+      VALUES ('${user_details.userID}', '${user_details.title}', '${user_details.readyInMinutes}', '${user_details.image}','${user_details.popularity}','${user_details.vegan}','${user_details.vegetarian}', '${user_details.glutenFree} ', '${user_details.ingredients}', '${user_details.instructions} ', '${user_details.servings}')`
     );
     res.status(201).send({ message: "new recipe added", success: true });
   } catch (error) {
@@ -131,11 +138,31 @@ router.post("/MyRecipes", async (req, res, next) => {
     const user_id = req.session.user_id;
     console.log("looking for user *" + user_id +"* - private recipes!");
     const myRecipes = await user_utils.getMyRecipes(user_id);
+    if (myRecipes.length==0) {
+      throw { status: 204, message: "No my recipes"};
+    }
     for(i=0; i< myRecipes.length; i++)
     {
       console.log("i = " + i +":" + await myRecipes[i]['id']);
     }
     res.status(200).send(myRecipes);
+  } catch(error){
+    next(error); 
+  }
+});
+
+/**
+ * This path returns the family recipes that were saved by the logged-in user
+ */
+ router.get('/familyRecipes', async (req,res,next) => {
+  try{
+    const user_id = req.session.user_id;
+    //let favorite_recipes = {};
+    const recipes = await user_utils.getFamilyRecipes(user_id);
+   // let recipes_id_array = [];
+    //recipes.map((element) => recipes_id_array.push(''+element.recipe_id)); //extracting the recipe ids into array
+    //const results = await recipe_utils.getRecipesPreview(recipes_id_array, user_id);
+    res.status(200).send(recipes);
   } catch(error){
     next(error); 
   }
