@@ -108,7 +108,7 @@ router.post("/MyRecipes", async (req, res, next) => {
       title: req.body.title,
       readyInMinutes: req.body.readyInMinutes,
       image: req.body.image,
-      popularity: req.body.popularity,
+      aggregateLikes: req.body.aggregateLikes,
       vegan: req.body.vegan,
       vegetarian: req.body.vegetarian,
       glutenFree: req.body.glutenFree,
@@ -120,8 +120,8 @@ router.post("/MyRecipes", async (req, res, next) => {
 
     console.log("add new recipe to DB");
     await DButils.execQuery(
-      `INSERT INTO myrecipes(userID, title, readyInMinutes, image, popularity, vegan, vegetarian, glutenFree, extendedIngredients, instructions, servings) 
-      VALUES ('${user_details.userID}', '${user_details.title}', '${user_details.readyInMinutes}', '${user_details.image}','${user_details.popularity}','${user_details.vegan}','${user_details.vegetarian}', '${user_details.glutenFree} ', '${user_details.ingredients}', '${user_details.instructions} ', '${user_details.servings}')`
+      `INSERT INTO myrecipes(userID, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree, extendedIngredients, instructions, servings) 
+      VALUES ('${user_details.userID}', '${user_details.title}', '${user_details.readyInMinutes}', '${user_details.image}','${user_details.aggregateLikes}','${user_details.vegan}','${user_details.vegetarian}', '${user_details.glutenFree} ', '${user_details.ingredients}', '${user_details.instructions} ', '${user_details.servings}')`
     );
     res.status(201).send({ message: "new recipe added", success: true });
   } catch (error) {
