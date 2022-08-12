@@ -12,11 +12,11 @@ const user_utils = require("./user_utils");
  * @param {*} diet the diet of the recipe
  * @param {*} intolerance the intolerance of the recipe
  */
- async function searchRecipeInformation(dish_Name,cuisine,diet, intolerance){
+ async function searchRecipeInformation(dish_Name,cuisine,diet, intolerance, num){
 
     const response = await axios.get(`${api_domain}/complexSearch`,{
         params:{
-            number: 15,
+            number: num,
             query: dish_Name,
             apiKey: process.env.spooncular_apiKey,
             addRecipeInformation: true,
@@ -30,8 +30,12 @@ const user_utils = require("./user_utils");
     return response;
 }
 
-async function searchRecipes(dish_Name, cuisine, diet, intolerance, user_id){
-    let recipe_info = await searchRecipeInformation(dish_Name,cuisine, diet, intolerance);
+async function searchRecipes(dish_Name, cuisine, diet, intolerance, user_id, num){
+    if(num > 15){
+        num = 15;
+    }
+         
+    let recipe_info = await searchRecipeInformation(dish_Name,cuisine, diet, intolerance, num);
    
     return  Promise.all(
         recipe_info.data.results.map(async(search_res) => {
@@ -63,7 +67,7 @@ async function searchRecipes(dish_Name, cuisine, diet, intolerance, user_id){
 }
 
 // ### Random ###
-async function getRandomRecipes(user_id) {
+/*async function getRandomRecipes(user_id) {
     console.log("get3RandomRecipes start");
     let recipe_info = await get3RandomRecipes();
     console.log("get3RandomRecipes end");
@@ -77,7 +81,48 @@ async function getRandomRecipes(user_id) {
     }
     console.log(await random_ids_array);
     return getRecipesPreview(random_ids_array, user_id);
+}*/
+async function getRandomRecipes(user_id) {
+    console.log("get3RandomRecipes start");
+    let recipe_info = await get3RandomRecipes();
+    console.log("get3RandomRecipes end");
+    console.log(recipe_info.data);
+
+    return  Promise.all(
+        recipe_info.data.recipes.map(async(random_res) => {
+            let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree} = random_res;
+            //check if user viewed the recipe+ if it is in his favorites
+            let is_viewed = false;
+            let is_favorite = false;
+            if(user_id != undefined){
+                is_viewed = await user_utils.isViewed(id, user_id);
+                is_favorite = await user_utils.isFavorite(id, user_id);
+            }
+            return {
+                id: id,
+                title: title,
+                readyInMinutes: readyInMinutes,
+                image: image,
+                popularity: aggregateLikes,
+                vegan: vegan,
+                vegetarian: vegetarian,
+                glutenFree: glutenFree,
+                
+                //ingredients: extendedIngredients,
+                //instructions: analyzedInstructions,
+                view: is_viewed,
+                favorite: is_favorite,
+            };
+    
+        })
+    
+    ) 
 }
+
+
+
+
+ 
 
 async function get3RandomRecipes(){
    return await axios.get(`${api_domain}/random`, {

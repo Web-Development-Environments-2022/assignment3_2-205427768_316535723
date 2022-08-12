@@ -12,6 +12,7 @@ router.get("/", (req, res) => res.send("im here"));
       const cuisine = req.query.cuisine;
       const diet = req.query.diet;
       const intolerance = req.query.intolerance;
+      const num = req.query.number;
       const user_id = req.session.user_id;
       // save the last seach
       req.session.dishName = dishName;
@@ -19,7 +20,7 @@ router.get("/", (req, res) => res.send("im here"));
       req.session.cuisine = cuisine;
       req.session.intolerance = intolerance; //??
 
-      const Recipes_search_15 = await recipes_utils.searchRecipes(dishName, cuisine, diet, intolerance, user_id);
+      const Recipes_search_15 = await recipes_utils.searchRecipes(dishName, cuisine, diet, intolerance, user_id, num);
       if (Recipes_search_15.length==0) {
         throw { status: 204, message: "No results"};
       }
