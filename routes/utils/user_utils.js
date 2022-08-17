@@ -2,8 +2,19 @@ const DButils = require("./DButils");
 
 
 
-async function markAsFavorite(user_id, recipe_id){
-    await DButils.execQuery(`insert into favoriterecipes values ('${user_id}','${recipe_id}')`);
+async function markAsFavorite(user_id, recipe_id, recipeFrom){
+    if(recipeFrom=="spoonacular"){
+        await DButils.execQuery(`insert into favoriterecipes values ('${user_id}','${recipe_id}')`);
+    }
+    if(recipeFrom=="my"){
+        await DButils.execQuery(`UPDATE myrecipes 
+        SET 
+            favorite = 1
+        WHERE
+            id = '${recipe_id}'`)
+    }
+    
+
 }
 
 async function getFavoriteRecipes(user_id){
@@ -49,12 +60,16 @@ async function isFavorite (recipe_id, user_id){
 }
 
 async function getMyRecipes(user_id){
-    const myRecipes = await DButils.execQuery(`select * from myrecipes where userID='${user_id}' LIMIT 10`);
+    const myRecipes = await DButils.execQuery(`select * from myrecipes where userID='${user_id}'`);
     return myRecipes;
+}
+async function getRecipeDetails(recipe_id){
+    const myRecipe = await DButils.execQuery(`select * from myrecipes where id='${recipe_id}'`);
+    return myRecipe;
 }
 
 async function getFamilyRecipes(user_id){
-    const familyRecipes = await DButils.execQuery(`select recipe_id,title,family_member,when_to_make,ingredients,instructions from familyrecipes where user_id='${user_id}'`);
+    const familyRecipes = await DButils.execQuery(`select recipe_id,title,family_member,when_to_make,ingredients,instructions,image from familyrecipes where user_id='${user_id}'`);
     return familyRecipes;
 }
 
@@ -66,3 +81,6 @@ exports.getLastWatchedRecipes = getLastWatchedRecipes;
 exports.isViewed = isViewed;
 exports.isFavorite = isFavorite;
 exports.getFamilyRecipes = getFamilyRecipes;
+exports.getLastViewsRecipes = getLastViewsRecipes;
+exports.getRecipeDetails = getRecipeDetails;
+

@@ -1,14 +1,25 @@
 openapi: 3.0.0
+#servers:
+  # Added by API Auto Mocking Plugin
+ # - description: SwaggerHub API Auto Mocking
+   # url: https://virtserver.swaggerhub.com/MayaSosnovik/API/1.0.0
 info:
-  title: Recipes api
-  description: API for recipes project
-  version: 1.0.1
+  description: This is a simple API
+  version: "1.0.0"
+  title: Simple Inventory API
+  contact:
+    email: you@your-company.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
 # local:
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/MayaSosnovik/API/1.0.0
 - url: "http://127.0.0.1:3000"
 # remote:
 # - url: "http://132.72.65.211"
-  description: SwaggerHub API Auto Mocking hey
 tags:
 - name: Auth
   description: All authentication related routes
@@ -144,6 +155,13 @@ paths:
           schema:
             type: string
             example: Gluten
+        - in: query
+          name: number
+          description: number of results.
+          required: false
+          schema:
+            type: integer
+            example: 15
         
       responses:
         '200':
@@ -262,6 +280,25 @@ paths:
           description: No my recipes
         '401':
           description: Unauthorized
+  /users/recipe:
+    get:
+      tags:
+        - Users
+      summary: gets data of a specific recipe
+      operationId: viewRecipe
+      description: gets data of my recipes of the logged in user
+      #parameters:
+      responses:
+        '200':
+          description: data of a specific recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getMyRecipes'
+        '401':
+          description: Unauthorized
+        '404':
+          description: recipe not found
   /recipes:
     get:
       tags:
@@ -523,6 +560,10 @@ components:
           type: integer
           description: recipeID of the recipe the logged in user wants to add to his favorites.
           example: 715530
+        from: 
+          type: string
+          description: from where is the recipe (spoonacular/my)
+          example: "spoonacular"
     FamilyRecipes:
       type: array
       description: list of recipes
@@ -584,10 +625,6 @@ components:
           description: link to the image of the recipe
           type: string
           example: https://spoonacular.com/recipeImages/715538-556x370.jpg
-        popularity:
-          description: the number of likes the recipe got
-          type: integer
-          example: 0
         vegan:
           description: is the recipe vegan
           type: boolean
@@ -624,8 +661,60 @@ components:
          # description: is the recipe is a favorite recipe of the user
           #type: boolean
           #example: false
+    getMyRecipes:
+      type: object
+      properties:
+        title:
+          description: the title of the recipe
+          type: string
+          example: What to make for dinner tonight?? Bruschetta Style Pork & Pasta
+        readyInMinutes:
+          description: the time it takes to make the recipe
+          type: integer
+          example: 35
+        image:
+          description: link to the image of the recipe
+          type: string
+          example: https://spoonacular.com/recipeImages/715538-556x370.jpg
+        vegan:
+          description: is the recipe vegan
+          type: boolean
+          example: false
+        vegetarian:
+          description: is the recipe vegeterian
+          type: boolean
+          example: false
+        glutenFree:
+          description: is the recipe glutenFree
+          type: boolean
+          example: false
+        extendedIngredients:
+          description: list of components and their quantity
+          type: string
+          example: 1 spoon of cofee, 30 ml milk,200 ml water
+        # type: array
+          #description: list of components and their quantity
+          #items:
+          # $ref: '#/components/schemas/componentsDetails'
+        instructions:
+          type: string
+          description: the instruction for making the recipe.
+          example: wash and rinse pork chops and place into the skillet.cut them into bite sized pieces and add half of the Basil Garlic simmer sauce.boil your water and start working on cooking your bow-tie pasta.when you have finished with boiling and draining your pasta, add it to the pork along with the rest of the Basil Garlic Simmering Sauce, mixing lightly.Next you will top with the Chunky Bruschetta Finishing Sauce, cover with Parmesan, and cover. Cooking on low heat 2 to 3 minutes or until heated through.
+        servings:
+          type: integer
+          description: the number of portions you can with the recipe.
+          example: 5
+        view:
+          description: is the recipe viewed before
+          type: boolean
+          example: false
+        favorite:
+          description: is the recipe is a favorite recipe of the user
+          type: boolean
+          example: false
+      
     myRecipes:
       type: array
       description: list of recipes
       items:
-        $ref: '#/components/schemas/addToMyRecipes'
+        $ref: '#/components/schemas/getMyRecipes'

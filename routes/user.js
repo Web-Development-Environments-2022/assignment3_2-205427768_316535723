@@ -29,7 +29,8 @@ router.post('/favorites', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     const recipe_id = req.body.recipeId;
-    await user_utils.markAsFavorite(user_id,recipe_id);
+    const recipeFrom = req.body.recipeFrom;
+    await user_utils.markAsFavorite(user_id,recipe_id,recipeFrom);
     res.status(200).send("The Recipe successfully saved as favorite");
     } catch(error){
     next(error);
@@ -114,14 +115,14 @@ router.post("/MyRecipes", async (req, res, next) => {
       glutenFree: req.body.glutenFree,
       ingredients: req.body.ingredients,
       instructions: req.body.instructions,
-      servings: req.body.servings
+      servings: req.body.servings,
     }
     console.log(user_details);
 
     console.log("add new recipe to DB");
     await DButils.execQuery(
-      `INSERT INTO myrecipes(userID, title, readyInMinutes, image, popularity, vegan, vegetarian, glutenFree, extendedIngredients, instructions, servings) 
-      VALUES ('${user_details.userID}', '${user_details.title}', '${user_details.readyInMinutes}', '${user_details.image}','${user_details.popularity}','${user_details.vegan}','${user_details.vegetarian}', '${user_details.glutenFree} ', '${user_details.ingredients}', '${user_details.instructions} ', '${user_details.servings}')`
+      `INSERT INTO myrecipes(userID, title, readyInMinutes, image, popularity, vegan, vegetarian, glutenFree, extendedIngredients, instructions, servings, favorite, view) 
+      VALUES ('${user_details.userID}', '${user_details.title}', '${user_details.readyInMinutes}', '${user_details.image}','${user_details.popularity}','${user_details.vegan}','${user_details.vegetarian}', '${user_details.glutenFree} ', '${user_details.ingredients}', '${user_details.instructions} ', '${user_details.servings}', '0', '0')`
     );
     res.status(201).send({ message: "new recipe added", success: true });
   } catch (error) {
@@ -148,6 +149,33 @@ router.post("/MyRecipes", async (req, res, next) => {
     res.status(200).send(myRecipes);
   } catch(error){
     next(error); 
+  }
+});
+// ## Information: single id ###
+/**
+ * This path returns a full details of a recipe by its id
+ */
+ router.get("/recipe", async (req, res, next) => {
+
+  try {
+    const user_id = req.session.user_id;
+    const recipe_id = req.query.recipeId;
+    try{
+      const recipe = await user_utils.getRecipeDetails(recipe_id);
+     /* if(user_id !=undefined){
+        //if(!user_id){
+           console.log(user_id);
+           await user_utils.markAsViewed(user_id,recipe_id);
+        }*/
+        res.send(recipe);
+    }
+    catch (error) {
+      throw { status: 404, message: "recipe not found"};
+    }
+    
+    
+  } catch (error) {
+    next(error);
   }
 });
 
