@@ -563,7 +563,7 @@ components:
         from: 
           type: string
           description: from where is the recipe (spoonacular/my)
-          example: "spoonacular"
+          example: spoonacular
     FamilyRecipes:
       type: array
       description: list of recipes
@@ -596,6 +596,10 @@ components:
           description: the instructions of the recipe
           type: string
           example: cofee
+        image:
+          description: url with image
+          type: string
+          example: https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fimages.media-allrecipes.com%2Fuserphotos%2F9240833.jpg&w=595&h=595&c=sc&poi=face&q=60
     randomArray:
       type: array
       description: list of recipes
